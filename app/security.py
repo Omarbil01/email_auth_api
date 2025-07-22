@@ -9,17 +9,11 @@ from passlib.context import CryptContext
 
 load_dotenv()
 
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
-# Validate required environment variables
-if not SECRET_KEY:
-    raise ValueError("SECRET_KEY environment variable is required")
-if not ALGORITHM:
-    raise ValueError("ALGORITHM environment variable is required")
-if SECRET_KEY == "your-super-secret-key-that-is-at-least-32-bytes-long":
-    raise ValueError("Please change the default SECRET_KEY to a secure one")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -29,8 +23,10 @@ def verify_otp(plain_otp: str, hashed_otp: str) -> bool:
 def get_otp_hash(otp: str) -> str:
     return pwd_context.hash(otp)
 
+
 def create_otp() -> str:
     return str(random.randint(100000, 999999))
+
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -41,6 +37,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
 
 def send_otp_email(email: str, otp: str):
     """
